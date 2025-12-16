@@ -60,7 +60,12 @@
             })
             .catch(error => {
                 console.error('Error loading changelog:', error);
-                changelogList.innerHTML = '<div class="loading" style="color: var(--secondary);">Failed to load changelog. Please try again later.</div>';
+                // Show a helpful error message with fallback demo data in development
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    changelogList.innerHTML = '<div class="loading" style="color: var(--text-muted); font-size: 0.95rem; padding: 20px;">GitHub API is not accessible in local development. The changelog will display commit history when deployed to GitHub Pages.</div>';
+                } else {
+                    changelogList.innerHTML = '<div class="loading" style="color: var(--secondary);">Failed to load changelog. Please try again later.</div>';
+                }
             });
     }
     
