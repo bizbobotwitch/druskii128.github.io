@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>admin panel - druskii128</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="desmos.png" type="image/x-icon">
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="JS/firebase-config.js"></script>
+<script src="JS/games-manager.js"></script>
+<style>
+  .admin-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+  }
+
+  .login-box {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .login-box h1 {
+    margin: 0 0 24px 0;
+    font-size: 2rem;
+    color: #ffffff;
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    background: #000000;
+    color: #ffffff;
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  .login-box input:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  }
+
+  .login-box button {
+    width: 100%;
+    padding: 14px;
+    background: #ffffff;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .login-box button:hover {
+    background: #e5e5e5;
+  }
+
+  .error-message {
+    color: #ff4444;
+    font-size: 0.875rem;
+    margin-top: 8px;
+    display: none;
+  }
+
+  .admin-panel {
+    display: none;
+  }
+
+  .admin-header {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .admin-header h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .logout-btn {
+    padding: 10px 20px;
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .logout-btn:hover {
+    background: #333333;
+  }
+
+  .admin-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .control-btn {
+    padding: 16px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .control-btn:hover {
+    background: #1a1a1a;
+    border-color: #ffffff;
+  }
+
+  .games-table {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px 150px 120px;
+    padding: 16px;
+    background: #1a1a1a;
+    font-weight: 600;
+    gap: 16px;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px 150px 120px;
+    padding: 16px;
+    border-top: 1px solid #1a1a1a;
+    gap: 16px;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+
+  .table-row:hover {
+    background: #1a1a1a;
+  }
+
+  .game-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .trending-toggle {
+    padding: 6px 12px;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #999999;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+
+  .trending-toggle.active {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+
+  .action-btns {
+    display: flex;
+    gap: 8px;
+  }
+
+  .edit-btn, .delete-btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #333333;
+    background: #1a1a1a;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+
+  .edit-btn:hover {
+    background: #333333;
+  }
+
+  .delete-btn:hover {
+    background: #ff4444;
+    border-color: #ff4444;
+  }
+
+  .add-game-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content-admin {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 32px;
+    width: 90%;
+    max-width: 600px;
+  }
+
+  .modal-content-admin h2 {
+    margin: 0 0 24px 0;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #999999;
+    font-size: 0.875rem;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #000000;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 1rem;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #ffffff;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .form-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: #ffffff;
+    color: #000000;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: #e5e5e5;
+  }
+
+  .btn-secondary {
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333333;
+  }
+
+  .btn-secondary:hover {
+    background: #333333;
+  }
+</style>
+</head>
+<body>
+
+<header class="menubar">
+  <nav class="topnav">
+    <a href="index.html">home</a>
+    <div class="topnav-right">
+      <a class="active" href="admin.html">admin</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- Login Form -->
+  <div id="login-container" class="admin-login">
+    <div class="login-box">
+      <h1>admin login</h1>
+      <input type="password" id="password-input" placeholder="enter password..." />
+      <button onclick="login()">login</button>
+      <div class="error-message" id="error-message">incorrect password</div>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" class="admin-panel">
+    <div class="admin-header">
+      <h1>admin panel</h1>
+      <button class="logout-btn" onclick="logout()">logout</button>
+    </div>
+
+    <div class="admin-controls">
+      <button class="control-btn" onclick="showAddGameModal()">+ add new game</button>
+      <button class="control-btn" onclick="exportGames()">export games list</button>
+      <button class="control-btn" onclick="refreshList()">refresh list</button>
+    </div>
+
+    <div class="games-table">
+      <div class="table-header">
+        <div>thumb</div>
+        <div>game name</div>
+        <div>trending</div>
+        <div>path</div>
+        <div>actions</div>
+      </div>
+      <div id="games-list">
+        <!-- Games will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Game Modal -->
+  <div id="add-game-modal" class="add-game-modal">
+    <div class="modal-content-admin">
+      <h2>add new game</h2>
+      <div class="form-group">
+        <label>game name</label>
+        <input type="text" id="game-name" placeholder="e.g., slope" />
+      </div>
+      <div class="form-group">
+        <label>game path</label>
+        <input type="text" id="game-path" placeholder="e.g., projects/slope/index.html" />
+      </div>
+      <div class="form-group">
+        <label>thumbnail path</label>
+        <input type="text" id="game-thumb" placeholder="e.g., projects/slope/slope4.jpeg" />
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="addGame()">add game</button>
+        <button class="btn-secondary" onclick="closeAddGameModal()">cancel</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// Password: admin123 (change this to your preferred password)
+const ADMIN_PASSWORD = 'admin123';
+const SESSION_KEY = 'admin_authenticated';
+const GAMES_STORAGE_KEY = 'druskii_games_data';
+
+let games = [];
+
+// Check if already logged in
+window.onload = function() {
+  if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+    showAdminPanel();
+  }
+};
+
+function login() {
+  const password = document.getElementById('password-input').value;
+  if (password === ADMIN_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    showAdminPanel();
+  } else {
+    document.getElementById('error-message').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('error-message').style.display = 'none';
+    }, 3000);
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('login-container').style.display = 'flex';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('password-input').value = '';
+}
+
+function showAdminPanel() {
+  document.getElementById('login-container').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  initializeAdmin();
+}
+
+// Initialize admin panel with Firebase
+function initializeAdmin() {
+  if (typeof gamesManager !== 'undefined') {
+    gamesManager.init();
+    
+    // Listen for game updates from both all games and trending
+    gamesManager.addListener((allGames, trendingGames) => {
+      games = allGames;
+      displayGames();
+    });
+  }
+}
+
+function displayGames() {
+  const gamesList = document.getElementById('games-list');
+  gamesList.innerHTML = '';
+  
+  // Sort: trending first, then alphabetically
+  const sortedGames = [...games].sort((a, b) => {
+    if (a.trending && !b.trending) return -1;
+    if (!a.trending && b.trending) return 1;
+    return a.name.localeCompare(b.name);
+  });
+  
+  sortedGames.forEach((game) => {
+    const row = document.createElement('div');
+    row.className = 'table-row';
+    row.innerHTML = `
+      <div><img src="${game.thumb}" class="game-thumb" alt="${game.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect fill=%22%231a1a1a%22 width=%22100%22 height=%22100%22/></svg>'"></div>
+      <div>${game.name}</div>
+      <div>
+        <button class="trending-toggle ${game.trending ? 'active' : ''}" onclick="toggleTrending('${game.id}')">
+          ${game.trending ? '★ trending' : '☆ add'}
+        </button>
+      </div>
+      <div style="font-size: 0.75rem; color: #666;">${game.path}</div>
+      <div class="action-btns">
+        <button class="edit-btn" onclick="editGame('${game.id}')">edit</button>
+        <button class="delete-btn" onclick="deleteGame('${game.id}')">delete</button>
+      </div>
+    `;
+    gamesList.appendChild(row);
+  });
+}
+
+async function toggleTrending(gameId) {
+  try {
+    const newStatus = await gamesManager.toggleTrending(gameId);
+    const game = games.find(g => g.id === gameId);
+    if (game) {
+      alert(`${game.name} ${newStatus ? 'added to' : 'removed from'} trending!`);
+    }
+  } catch (error) {
+    console.error('Error toggling trending:', error);
+    alert('error updating trending status');
+  }
+}
+
+async function editGame(gameId) {
+  const game = games.find(g => g.id === gameId);
+  if (!game) return;
+  
+  const newName = prompt('edit game name:', game.name);
+  if (newName && newName !== game.name) {
+    try {
+      await gamesManager.updateGame(gameId, { name: newName });
+      alert('game updated successfully!');
+    } catch (error) {
+      console.error('Error updating game:', error);
+      alert('error updating game');
+    }
+  }
+}
+
+async function deleteGame(gameId) {
+  const game = games.find(g => g.id === gameId);
+  if (!game) return;
+  
+  if (confirm(`are you sure you want to delete ${game.name}?`)) {
+    try {
+      await gamesManager.deleteGame(gameId);
+      alert('game deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting game:', error);
+      alert('error deleting game');
+    }
+  }
+}
+
+function showAddGameModal() {
+  document.getElementById('add-game-modal').style.display = 'flex';
+}
+
+function closeAddGameModal() {
+  document.getElementById('add-game-modal').style.display = 'none';
+  document.getElementById('game-name').value = '';
+  document.getElementById('game-path').value = '';
+  document.getElementById('game-thumb').value = '';
+}
+
+async function addGame() {
+  const name = document.getElementById('game-name').value.trim();
+  const path = document.getElementById('game-path').value.trim();
+  const thumb = document.getElementById('game-thumb').value.trim();
+  
+  if (name && path && thumb) {
+    try {
+      await gamesManager.addGame({ name, path, thumb, trending: false });
+      closeAddGameModal();
+      alert('game added successfully!');
+    } catch (error) {
+      console.error('Error adding game:', error);
+      alert('error adding game');
+    }
+  } else {
+    alert('please fill in all fields');
+  }
+}
+
+function exportGames() {
+  const data = JSON.stringify(games, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'games-list.json';
+  a.click();
+  alert('games exported successfully!');
+}
+
+function refreshList() {
+  displayGames();
+  alert('list refreshed!');
+}
+
+// Allow Enter key to login
+document.getElementById('password-input')?.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    login();
+  }
+});
+</script>
+
+</body>
+</html>

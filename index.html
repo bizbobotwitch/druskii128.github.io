@@ -17,6 +17,11 @@
 </script>
 <!-- ad$$$ -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9261158347206771" crossorigin="anonymous"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="JS/firebase-config.js"></script>
+<script src="JS/games-manager.js"></script>
 </head>
 <body onload="startTime()">
 
@@ -26,75 +31,40 @@
     <div class="topnav-right">
       <a href="https://forms.gle/eRT37jLokfETBNUs6">request</a>
       <a href="#" id="changelog-btn">changelog</a>
-      <span>last updated: 12/16/25 - ui redesign</span>
+      <span>last updated: 12/16/25 8:30 pm cst</span>
     </div>
   </nav>
 </header>
 
 <main>
-  <div class="hero-section">
-    <h1 class="title text-center">druskii128</h1>
-    <p class="text-center" style="color: var(--text-secondary); font-size: 1.15rem; margin-bottom: 10px; font-weight: 500; max-width: 600px; margin-left: auto; margin-right: auto;">conner was here</p>
-  </div>
-  
   <nav>
     <div class="nav-container">
       <div class="search-container">
         <input class="search-box" id="search-box" type="search" onkeyup="searching(this)" onfocus="fun(this)" placeholder="search...">
-        <button class="clear-search" id="clear-search" onclick="clearSearch()" title="Clear search">×</button>
+        <button class="clear-search" id="clear-search" onclick="clearSearch()" title="clear search">×</button>
         <div class="search-results" id="search-results"></div>
       </div>
     </div>
   </nav>
-  
-  <h2 class="text-center">popular games</h2>
 
-  <!-- Featured games section -->
+  <div class="hero-section">
+    <h1 class="title">druskii128</h1>
+    <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 0; font-weight: 400; max-width: 600px;">conner was here :)</p>
+  </div>
+  
+  <h2 class="text-center">trending games</h2>
+
+  <!-- Trending games section - dynamically loaded -->
   <script src="JS/search.js"></script>
 
-  <div id="games" class="flex-container" style="margin-bottom: 50px;">
-
-    <a href="projects/bitlife/index.html" class="game-link">
-      <div class="game-tile-popular">
-        <img class="game-icon" src="projects/bitlife/thumb.png" alt="Bitlife">
-        <h2 class="game-title">Bitlife</h2>
-      </div>
-    </a>
-
-    <a href="projects/drift-boss/index.html" class="game-link">
-      <div class="game-tile-popular">
-        <img class="game-icon" src="projects/drift-boss/drift-boss.png" alt="Drift Boss">
-        <h2 class="game-title">Drift Boss</h2>
-      </div>
-    </a>
-
-    <a href="projects/slope/index.html" class="game-link">
-      <div class="game-tile-popular">
-        <img class="game-icon" src="projects/slope/slope4.jpeg" alt="Slope">
-        <h2 class="game-title">Slope</h2>
-      </div>
-    </a>
-
-    <a href="projects/hw/index.html" class="game-link">
-      <div class="game-tile-popular">
-        <img class="game-icon" src="projects/hw/loading.png" alt="Happy Wheels">
-        <h2 class="game-title">Happy Wheels</h2>
-      </div>
-    </a>
-
-    <a href="projects/polytrack/index.html" class="game-link">
-      <div class="game-tile-popular">
-        <img class="game-icon" src="projects/polytrack/images/icon.svg" alt="Polytrack">
-        <h2 class="game-title">Polytrack</h2>
-      </div>
-    </a>
-
+  <div id="trending-games" class="flex-container" style="margin-bottom: 50px;">
+    <!-- Trending games loaded from Firebase -->
   </div>
   
   <h2 class="text-center">all games</h2>
-  
-  <div class="flex-container">
-    <!-- All games in alphabetical order -->
+
+  <div id="all-games" class="flex-container">
+    <!-- All games loaded from Firebase -->
     <a href="projects/2048/index.html" class="game-link container">
               <div class="game-tile">
                   <img class="game-icon" src="projects/2048/thumb.png" alt="icon" width="360" height="360" />
@@ -460,15 +430,52 @@
           </a>
 
   </div>
+
+    <a href="projects/bitlife/index.html" class="game-link">
+      <div class="game-tile-popular">
+        <img class="game-icon" src="projects/bitlife/thumb.png" alt="bitlife">
+        <h2 class="game-title">bitlife</h2>
+      </div>
+    </a>
+
+    <a href="projects/drift-boss/index.html" class="game-link">
+      <div class="game-tile-popular">
+        <img class="game-icon" src="projects/drift-boss/drift-boss.png" alt="drift boss">
+        <h2 class="game-title">drift boss</h2>
+      </div>
+    </a>
+
+    <a href="projects/slope/index.html" class="game-link">
+      <div class="game-tile-popular">
+        <img class="game-icon" src="projects/slope/slope4.jpeg" alt="slope">
+        <h2 class="game-title">slope</h2>
+      </div>
+    </a>
+
+    <a href="projects/hw/index.html" class="game-link">
+      <div class="game-tile-popular">
+        <img class="game-icon" src="projects/hw/loading.png" alt="happy wheels">
+        <h2 class="game-title">happy wheels</h2>
+      </div>
+    </a>
+
+    <a href="projects/polytrack/index.html" class="game-link">
+      <div class="game-tile-popular">
+        <img class="game-icon" src="projects/polytrack/images/icon.svg" alt="polytrack">
+        <h2 class="game-title">polytrack</h2>
+      </div>
+    </a>
+
+  </div>
 		
-  <h2 id="saras-cooking-class" class="text-center">👩‍🍳 Sara's Cooking Class</h2>
+  <h2 id="saras-cooking-class" class="text-center">👩‍🍳 sara's cooking class</h2>
 				
   <div class="flex-container">
 
           <a href="projects/gingerbread-house/index.html" class="game-link container">
               <div class="game-tile">
                   <img class="game-icon" src="projects/gingerbread-house/thumb.png" alt="icon" width="360" height="360" />
-                  <h1 class="game-title">[Coming Soon] Gingerbread House</h1>
+                  <h1 class="game-title">[coming soon] gingerbread house</h1>
               </div>
           </a>
 		
@@ -480,21 +487,118 @@
 <div id="changelog-modal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h2>Changelog</h2>
+      <h2>changelog</h2>
       <span class="modal-close">&times;</span>
     </div>
     <div class="modal-body">
       <div id="changelog-list">
-        <div class="loading">Loading changelog...</div>
+        <div class="loading">loading changelog...</div>
       </div>
     </div>
   </div>
 </div>
+
+<div class="loading-overlay" id="loading-overlay"></div>
+<div class="loading-spinner" id="loading-spinner"></div>
 
 <script src="JS/hide.js"></script>
 <script src="JS/clock.js"></script>
 <script src="JS/search.js"></script>
 <script src="JS/size.js"></script>
 <script src="JS/changelog.js"></script>
+
+<script>
+// Initialize games display with Firebase
+if (typeof gamesManager !== 'undefined') {
+  gamesManager.init();
+  
+  gamesManager.addListener((allGames, trendingGames) => {
+    console.log('Games updated - Trending:', trendingGames.length, 'All:', allGames.length);
+    renderTrendingGames(trendingGames);
+    renderAllGames(allGames);
+  });
+}
+
+function renderTrendingGames(games) {
+  const container = document.getElementById('trending-games');
+  container.innerHTML = '';
+  
+  // Already sorted by plays in games-manager
+  games.forEach(game => {
+    const gameLink = document.createElement('a');
+    gameLink.className = 'game-link';
+    
+    // Track clicks before navigation
+    gameLink.addEventListener('click', async (e) => {
+      // Prevent immediate navigation
+      e.preventDefault();
+      
+      // Show loading spinner
+      const spinner = document.getElementById('loading-spinner');
+      const overlay = document.getElementById('loading-overlay');
+      if (spinner) spinner.classList.add('active');
+      if (overlay) overlay.classList.add('active');
+      
+      if (game.id) {
+        try {
+          console.log('Incrementing play count for:', game.name, game.id);
+          await gamesManager.incrementPlays(game.id);
+          console.log('Play count updated successfully');
+        } catch (error) {
+          console.error('Error tracking play:', error);
+        }
+      }
+      
+      // Hide loading spinner and navigate
+      if (spinner) spinner.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      
+      // Navigate after tracking (with small delay)
+      setTimeout(() => {
+        window.location.href = game.path;
+      }, 100);
+    });
+    
+    const plays = game.plays || 0;
+    const playsText = plays >= 1000 ? (plays / 1000).toFixed(1) + 'k' : plays;
+    
+    gameLink.innerHTML = `
+      <div class="game-tile-popular">
+        <img class="game-icon" src="${game.thumb}" alt="${game.name}">
+        <h2 class="game-title">${game.name}</h2>
+        <div class="play-counter">
+          <span class="play-counter-icon">🎮</span>
+          <span>${playsText}</span>
+        </div>
+      </div>
+    `;
+    
+    container.appendChild(gameLink);
+  });
+}
+
+function renderAllGames(games) {
+  const container = document.getElementById('all-games');
+  container.innerHTML = '';
+  
+  // Sort alphabetically
+  const sortedGames = [...games].sort((a, b) => a.name.localeCompare(b.name));
+  
+  sortedGames.forEach(game => {
+    const gameLink = document.createElement('a');
+    gameLink.href = game.path;
+    gameLink.className = 'game-link container';
+    
+    gameLink.innerHTML = `
+      <div class="game-tile">
+        <img class="game-icon" src="${game.thumb}" alt="${game.name}" width="360" height="360">
+        <h1 class="game-title">${game.name}</h1>
+      </div>
+    `;
+    
+    container.appendChild(gameLink);
+  });
+}
+</script>
 </body>
 </html>
