@@ -275,7 +275,6 @@
           // Build cards and resolve thumbnails asynchronously
           otherSessions.forEach((session, idx) => {
             const location = session.displayLocation || 'browsing';
-            const ip = session.ip || 'unknown';
 
             const card = document.createElement('div');
             card.className = 'user-card';
@@ -284,7 +283,6 @@
             left.style.flex = '1';
             left.innerHTML = `
               <div><strong>user ${idx + 1}</strong></div>
-              <div class="user-ip">ip: ${ip}</div>
               <div class="user-location">location: ${location}</div>
             `;
 
