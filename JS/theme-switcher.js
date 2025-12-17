@@ -3,6 +3,9 @@
  * Handles theme selection, application, and persistence
  */
 
+// Default theme identifier
+const DEFAULT_THEME = 'dark';
+
 // Apply theme to document
 function applyTheme(themeId) {
   const theme = getThemeById(themeId);
@@ -31,15 +34,13 @@ function applyTheme(themeId) {
   
   // Save theme preference to localStorage
   localStorage.setItem('selectedTheme', themeId);
-  
-  console.log(`Theme applied: ${theme.name}`);
 }
 
 // Initialize theme on page load
 function initializeTheme() {
   // Check for saved theme preference
   const savedTheme = localStorage.getItem('selectedTheme');
-  const themeToApply = savedTheme || 'dark'; // Default to dark
+  const themeToApply = savedTheme || DEFAULT_THEME;
   
   applyTheme(themeToApply);
 }
@@ -50,7 +51,7 @@ function setupThemeDropdown() {
   if (!dropdown) return;
   
   // Set current theme as selected
-  const currentTheme = localStorage.getItem('selectedTheme') || 'dark';
+  const currentTheme = localStorage.getItem('selectedTheme') || DEFAULT_THEME;
   dropdown.value = currentTheme;
   
   // Add change event listener

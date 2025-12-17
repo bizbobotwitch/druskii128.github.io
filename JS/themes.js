@@ -98,7 +98,12 @@ const themes = [
 
 // Get theme by ID
 function getThemeById(id) {
-  return themes.find(theme => theme.id === id) || themes[0];
+  const theme = themes.find(theme => theme.id === id);
+  if (!theme) {
+    console.warn(`Theme with id "${id}" not found. Falling back to default theme.`);
+    return themes[0];
+  }
+  return theme;
 }
 
 // Get all theme names for dropdown

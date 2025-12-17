@@ -167,7 +167,7 @@ header {
 
 .theme-dropdown:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 2px var(--bg-elevated);
 }
 
 .theme-dropdown option {
@@ -227,9 +227,9 @@ main {
 }
 
 .search-box:focus {
-  background: #0a0a0a;
-  box-shadow: 0 0 0 2px #ffffff;
-  border-color: #ffffff;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 2px var(--primary);
+  border-color: var(--primary);
 }
 
 /* search in topbar */
