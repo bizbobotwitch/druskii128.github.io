@@ -83,17 +83,26 @@
         // Deduplicate by IP address to count unique users
         const uniqueIPs = new Set();
         const uniqueInGameIPs = new Set();
+        let unknownIPCount = 0;
+        let unknownIPInGameCount = 0;
+        
         validSessions.forEach(s => {
           if (s.ip && s.ip !== 'unknown') {
             uniqueIPs.add(s.ip);
             if (s.isGame === true) {
               uniqueInGameIPs.add(s.ip);
             }
+          } else {
+            // Count each session with unknown IP separately as we can't deduplicate them
+            unknownIPCount++;
+            if (s.isGame === true) {
+              unknownIPInGameCount++;
+            }
           }
         });
         
-        const totalOnline = uniqueIPs.size;
-        const ingame = uniqueInGameIPs.size;
+        const totalOnline = uniqueIPs.size + unknownIPCount;
+        const ingame = uniqueInGameIPs.size + unknownIPInGameCount;
         console.log('Presence update - Total:', totalOnline, 'In Game:', ingame);
         if (onlineCountEl) onlineCountEl.textContent = totalOnline + ' online';
         if (ingameCountEl) ingameCountEl.textContent = ingame + ' in game';
