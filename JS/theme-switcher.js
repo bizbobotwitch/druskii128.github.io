@@ -23,9 +23,6 @@ function applyTheme(themeId) {
   root.style.setProperty('--text-secondary', theme.colors.textSecondary);
   root.style.setProperty('--text-muted', theme.colors.textMuted);
   
-  // Also update body background directly for immediate effect
-  document.body.style.background = theme.colors.bgDark;
-  
   // Update dropdown to show current selection
   const dropdown = document.getElementById('theme-dropdown');
   if (dropdown) {
@@ -51,17 +48,6 @@ function initializeTheme() {
 function setupThemeDropdown() {
   const dropdown = document.getElementById('theme-dropdown');
   if (!dropdown) return;
-  
-  // Populate dropdown with themes
-  const allThemes = getAllThemes();
-  dropdown.innerHTML = '';
-  
-  allThemes.forEach(theme => {
-    const option = document.createElement('option');
-    option.value = theme.id;
-    option.textContent = theme.name;
-    dropdown.appendChild(option);
-  });
   
   // Set current theme as selected
   const currentTheme = localStorage.getItem('selectedTheme') || 'dark';

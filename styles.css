@@ -24,7 +24,7 @@
 }
 
 body {
-  background: #000000;
+  background: var(--bg-dark);
   background-image: none;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
@@ -71,9 +71,9 @@ body {
 .game-link:nth-child(5) { animation-delay: 0.17s; }
 
 header {
-  background: #000000;
+  background: var(--bg-dark);
   backdrop-filter: none;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--bg-elevated);
   box-shadow: none;
   position: sticky;
   top: 0;

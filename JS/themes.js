@@ -1,6 +1,30 @@
 /**
  * Theme Configuration
- * Easy to add new themes by adding a new object to the themes array
+ * 
+ * HOW TO ADD A NEW THEME:
+ * ----------------------
+ * 1. Copy one of the existing theme objects below
+ * 2. Change the 'name' field to your theme's display name
+ * 3. Change the 'id' field to a unique lowercase identifier (e.g., 'ocean', 'forest')
+ * 4. Modify the color values in the 'colors' object:
+ *    - Use hex color codes (e.g., '#ff6b6b')
+ *    - All fields are required for the theme to work properly
+ * 5. Add your new theme object to the themes array
+ * 6. The theme will automatically appear in the dropdown!
+ * 
+ * COLOR FIELDS EXPLAINED:
+ * ----------------------
+ * primary: Main accent color (used for highlights, active states)
+ * primaryDark: Darker version of primary color
+ * secondary: Secondary accent color
+ * accent: Additional accent color
+ * success: Success/positive color
+ * bgDark: Main background color
+ * bgCard: Card/container background color
+ * bgElevated: Elevated element background color (hover states, modals)
+ * textPrimary: Primary text color
+ * textSecondary: Secondary text color (less emphasis)
+ * textMuted: Muted text color (least emphasis)
  */
 
 const themes = [
