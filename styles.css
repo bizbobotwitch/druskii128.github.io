@@ -144,6 +144,38 @@ header {
   flex-shrink: 0;
 }
 
+/* Theme Dropdown Styling */
+.theme-dropdown {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--bg-elevated);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  text-transform: lowercase;
+}
+
+.theme-dropdown:hover {
+  background: var(--bg-elevated);
+  border-color: var(--primary);
+}
+
+.theme-dropdown:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.theme-dropdown option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
 .title {
   font-size: 4rem;
   margin: 60px 0 16px;
