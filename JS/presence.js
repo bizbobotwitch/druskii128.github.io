@@ -124,9 +124,29 @@
       infoBtn.addEventListener('click', () => {
         modal.style.display = 'flex';
         // Fetch and display other users (exclude current session)
-        db.ref('presence/sessions').once('value', (snapshot) => {
-          const sessions = snapshot.val() || {};
+        Promise.all([
+          db.ref('presence/sessions').once('value'),
+          db.ref('games').once('value')
+        ]).then(([sessionsSnapshot, gamesSnapshot]) => {
+          const sessions = sessionsSnapshot.val() || {};
+          const games = gamesSnapshot.val() || {};
           const now = Date.now();
+          
+          // Create a map of gameId to game data for quick lookup
+          const gamesMap = {};
+          Object.values(games).forEach(game => {
+            if (game && game.id) {
+              // Extract gameId from the game's path
+              const pathMatch = game.path?.match(/\/projects\/([^\/]+)\//);
+              if (pathMatch) {
+                gamesMap[pathMatch[1]] = game;
+              }
+              // Also handle subway-surfers special case
+              if (game.path?.includes('subway-surfers')) {
+                gamesMap['subway-surfers'] = game;
+              }
+            }
+          });
           
           const otherSessions = Object.entries(sessions)
             .filter(([key, user]) => {
@@ -145,7 +165,14 @@
           usersList.innerHTML = otherSessions.map((session, idx) => {
             const location = session.displayLocation || 'browsing';
             const ip = session.ip || 'unknown';
-            const gameIcon = session.gameId ? `<img src="/projects/${session.gameId}/thumb.png" alt="" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover; margin-right: 8px;">` : '';
+            
+            // Get the correct game thumb from the games database
+            let gameIcon = '';
+            if (session.gameId && gamesMap[session.gameId]) {
+              const game = gamesMap[session.gameId];
+              const thumbPath = game.thumb || `/projects/${session.gameId}/thumb.png`;
+              gameIcon = `<img src="${thumbPath}" alt="" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover; margin-right: 8px;">`;
+            }
             
             return `
               <div style="background: #1a1a1a; padding: 12px; border-radius: 8px; font-size: 0.875rem; border-left: 3px solid #2ecc71; display: flex; align-items: flex-start; gap: 8px;">
@@ -158,6 +185,9 @@
               </div>
             `;
           }).join('');
+        }).catch(err => {
+          console.error('Error loading users:', err);
+          usersList.innerHTML = '<div style="color: #999999; font-size: 0.875rem;">error loading users</div>';
         });
       });
 
