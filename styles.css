@@ -449,6 +449,8 @@ main {
   text-decoration: none;
   display: block;
   height: 100%;
+  width: 100%;
+  max-width: 100%;
 }
 
 .game-tile, .game-tile-popular {
@@ -1077,6 +1079,9 @@ a.active::before {
   justify-content: center;
   min-height: 250px;
   transition: all 0.2s ease;
+  grid-column: span 1;
+  width: 100%;
+  max-width: 100%;
 }
 
 .ad-card:hover {
