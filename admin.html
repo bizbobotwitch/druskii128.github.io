@@ -334,7 +334,7 @@
 
     <div class="admin-controls">
       <button class="control-btn" onclick="showAddGameModal()">+ add new game</button>
-      <button class="control-btn" onclick="showAnnouncementModal()">📢 create announcement</button>
+      <button class="control-btn" onclick="showAnnouncementModal()">create announcement</button>
       <button class="control-btn" onclick="exportGames()">export games list</button>
       <button class="control-btn" onclick="refreshList()">refresh list</button>
     </div>
@@ -417,17 +417,22 @@
 
 <script>
 // Admin auth: use Firebase Authentication (email/password). No passwords stored client-side.
-// Allowed admin emails (optional): restrict access to specific accounts.
-const ALLOWED_ADMINS = [];
+// Allowed admin emails: restrict access to specific accounts.
+const ALLOWED_ADMINS = ['silasputerbaugh1@gmail.com'];
 const GAMES_STORAGE_KEY = 'druskii_games_data';
 
 let games = [];
 
 // Auth state listener: show admin panel for authenticated users (and optional allowlist)
 firebase.auth().onAuthStateChanged(function(user) {
-  const isAllowed = !ALLOWED_ADMINS.length || (user && ALLOWED_ADMINS.includes(user.email));
+  const isAllowed = !!(user && ALLOWED_ADMINS.includes(user.email));
   if (user && isAllowed) {
     showAdminPanel();
+  } else if (user && !isAllowed) {
+    showError('this account is not authorized');
+    firebase.auth().signOut();
+    document.getElementById('login-container').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
   } else {
     document.getElementById('login-container').style.display = 'flex';
     document.getElementById('admin-panel').style.display = 'none';
