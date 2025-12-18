@@ -617,8 +617,22 @@ if (typeof announcementManager !== 'undefined') {
     
     // If there's a button link, navigate to it instead of dismissing
     if (announcement && announcement.buttonLink) {
-      window.location.href = announcement.buttonLink;
-      return;
+      try {
+        // Validate URL to prevent XSS and malicious redirects
+        const url = new URL(announcement.buttonLink, window.location.origin);
+        // Only allow http, https, and relative URLs
+        if (url.protocol === 'http:' || url.protocol === 'https:' || announcement.buttonLink.startsWith('/')) {
+          window.location.href = announcement.buttonLink;
+          return;
+        }
+      } catch (e) {
+        // If URL parsing fails, check if it's a relative path
+        if (announcement.buttonLink.startsWith('/')) {
+          window.location.href = announcement.buttonLink;
+          return;
+        }
+        console.error('Invalid announcement button link:', e);
+      }
     }
     
     // Otherwise, dismiss the announcement
