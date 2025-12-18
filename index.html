@@ -611,6 +611,18 @@ if (typeof announcementManager !== 'undefined') {
     }
   });
   
+  // Helper function to dismiss announcement
+  function dismissAnnouncement(announcement) {
+    if (announcement) {
+      sessionStorage.setItem('announcement-dismissed-' + announcement.createdAt, 'true');
+    }
+    const banner = document.getElementById('announcement-banner');
+    banner.classList.remove('show');
+    setTimeout(() => {
+      banner.style.display = 'none';
+    }, 300);
+  }
+  
   // Handle dismiss button
   document.getElementById('announcement-dismiss').addEventListener('click', function() {
     const announcement = announcementManager.getCurrentAnnouncement();
@@ -621,53 +633,45 @@ if (typeof announcementManager !== 'undefined') {
       
       // Check if buttonLink is not empty after trimming
       if (!buttonLink) {
-        // Empty link, treat as dismiss
-        if (announcement) {
-          sessionStorage.setItem('announcement-dismissed-' + announcement.createdAt, 'true');
-        }
-        const banner = document.getElementById('announcement-banner');
-        banner.classList.remove('show');
-        setTimeout(() => {
-          banner.style.display = 'none';
-        }, 300);
+        dismissAnnouncement(announcement);
         return;
       }
       
       // Handle relative URLs (starting with / but not with //)
       if (buttonLink.startsWith('/') && !buttonLink.startsWith('//')) {
-        // Basic validation: ensure no dangerous patterns
-        if (!buttonLink.includes('..') && !buttonLink.toLowerCase().includes('javascript:')) {
+        // Validate relative URL: no dangerous patterns
+        const lowerLink = buttonLink.toLowerCase();
+        const dangerousPatterns = ['..', 'javascript:', 'data:', 'vbscript:', 'file:'];
+        const hasDangerousPattern = dangerousPatterns.some(pattern => lowerLink.includes(pattern));
+        
+        if (!hasDangerousPattern) {
           window.location.href = buttonLink;
           return;
         } else {
           console.error('Potentially dangerous relative URL pattern detected');
+          // Fall through to dismiss
         }
-      }
-      
-      // Validate absolute URLs
-      try {
-        const url = new URL(buttonLink);
-        // Only allow http and https protocols
-        if (url.protocol === 'http:' || url.protocol === 'https:') {
-          window.location.href = url.href;
-          return;
-        } else {
-          console.error('Invalid URL protocol:', url.protocol);
+      } else {
+        // Validate absolute URLs
+        try {
+          const url = new URL(buttonLink);
+          // Only allow http and https protocols
+          if (url.protocol === 'http:' || url.protocol === 'https:') {
+            window.location.href = url.href;
+            return;
+          } else {
+            console.error('Invalid URL protocol:', url.protocol);
+            // Fall through to dismiss
+          }
+        } catch (e) {
+          console.error('Invalid announcement button link:', e);
+          // Fall through to dismiss
         }
-      } catch (e) {
-        console.error('Invalid announcement button link:', e);
       }
     }
     
-    // Otherwise, dismiss the announcement
-    if (announcement) {
-      sessionStorage.setItem('announcement-dismissed-' + announcement.createdAt, 'true');
-    }
-    const banner = document.getElementById('announcement-banner');
-    banner.classList.remove('show');
-    setTimeout(() => {
-      banner.style.display = 'none';
-    }, 300);
+    // Dismiss the announcement
+    dismissAnnouncement(announcement);
   });
 }
 
