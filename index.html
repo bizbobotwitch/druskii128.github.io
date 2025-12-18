@@ -617,20 +617,25 @@ if (typeof announcementManager !== 'undefined') {
     
     // If there's a button link, navigate to it instead of dismissing
     if (announcement && announcement.buttonLink) {
+      const buttonLink = announcement.buttonLink.trim();
+      
+      // Handle relative URLs (starting with /)
+      if (buttonLink.startsWith('/')) {
+        window.location.href = buttonLink;
+        return;
+      }
+      
+      // Validate absolute URLs
       try {
-        // Validate URL to prevent XSS and malicious redirects
-        const url = new URL(announcement.buttonLink, window.location.origin);
-        // Only allow http, https, and relative URLs
-        if (url.protocol === 'http:' || url.protocol === 'https:' || announcement.buttonLink.startsWith('/')) {
-          window.location.href = announcement.buttonLink;
+        const url = new URL(buttonLink);
+        // Only allow http and https protocols
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+          window.location.href = url.href;
           return;
+        } else {
+          console.error('Invalid URL protocol:', url.protocol);
         }
       } catch (e) {
-        // If URL parsing fails, check if it's a relative path
-        if (announcement.buttonLink.startsWith('/')) {
-          window.location.href = announcement.buttonLink;
-          return;
-        }
         console.error('Invalid announcement button link:', e);
       }
     }
