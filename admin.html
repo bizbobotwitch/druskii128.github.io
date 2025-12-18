@@ -9,6 +9,7 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="JS/firebase-config.js"></script>
 <script src="JS/games-manager.js"></script>
 <script src="JS/announcement-manager.js"></script>
@@ -317,6 +318,7 @@
   <div id="login-container" class="admin-login">
     <div class="login-box">
       <h1>admin login</h1>
+      <input type="email" id="email-input" placeholder="enter email..." />
       <input type="password" id="password-input" placeholder="enter password..." />
       <button onclick="login()">login</button>
       <div class="error-message" id="error-message">incorrect password</div>
@@ -414,44 +416,61 @@
 </main>
 
 <script>
-// Password: admin123 (change this to your preferred password)
-const ADMIN_PASSWORD = 'admin123';
-const SESSION_KEY = 'admin_authenticated';
+// Admin auth: use Firebase Authentication (email/password). No passwords stored client-side.
+// Allowed admin emails (optional): restrict access to specific accounts.
+const ALLOWED_ADMINS = [];
 const GAMES_STORAGE_KEY = 'druskii_games_data';
 
 let games = [];
 
-// Check if already logged in
-window.onload = function() {
-  if (sessionStorage.getItem(SESSION_KEY) === 'true') {
-    showAdminPanel();
-  }
-};
-
-function login() {
-  const password = document.getElementById('password-input').value;
-  if (password === ADMIN_PASSWORD) {
-    sessionStorage.setItem(SESSION_KEY, 'true');
+// Auth state listener: show admin panel for authenticated users (and optional allowlist)
+firebase.auth().onAuthStateChanged(function(user) {
+  const isAllowed = !ALLOWED_ADMINS.length || (user && ALLOWED_ADMINS.includes(user.email));
+  if (user && isAllowed) {
     showAdminPanel();
   } else {
-    document.getElementById('error-message').style.display = 'block';
-    setTimeout(() => {
-      document.getElementById('error-message').style.display = 'none';
-    }, 3000);
+    document.getElementById('login-container').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
   }
+});
+
+function login() {
+  const email = document.getElementById('email-input').value.trim();
+  const password = document.getElementById('password-input').value;
+  if (!email || !password) {
+    showError('please enter email and password');
+    return;
+  }
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(() => {
+      // onAuthStateChanged will handle UI
+    })
+    .catch((error) => {
+      console.error('Auth error:', error);
+      showError(error.message || 'incorrect email or password');
+    });
 }
 
 function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
-  document.getElementById('login-container').style.display = 'flex';
-  document.getElementById('admin-panel').style.display = 'none';
-  document.getElementById('password-input').value = '';
+  firebase.auth().signOut().then(() => {
+    document.getElementById('login-container').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('email-input').value = '';
+    document.getElementById('password-input').value = '';
+  });
 }
 
 function showAdminPanel() {
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'block';
   initializeAdmin();
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-message');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
 }
 
 // Initialize admin panel with Firebase
@@ -591,10 +610,11 @@ function refreshList() {
 }
 
 // Allow Enter key to login
-document.getElementById('password-input')?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    login();
-  }
+['email-input','password-input'].forEach(id => {
+  const el = document.getElementById(id);
+  el && el.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') login();
+  });
 });
 
 // Announcement Modal Functions
