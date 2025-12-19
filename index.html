@@ -77,11 +77,7 @@
             <span id="ingame-count" style="margin-left: 8px; color: var(--color-in-game);">0 in game</span>
             <button id="online-info-btn" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.875rem; padding: 0 4px; margin-left: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; opacity: 0.6;" title="view other users">more</button>
         </div>
-        <div class="presence-indicator" id="leaderboard-indicator" style="margin-top: 8px; display: flex; align-items: center; gap: 8px; color: var(--text-secondary);">
-            <span class="presence-icon" aria-hidden="true">🏆</span>
-            <span id="leaderboard-top">#1: loading...</span>
-            <button id="leaderboard-info-btn" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.875rem; padding: 0 4px; margin-left: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; opacity: 0.6;" title="view leaderboards">more</button>
-        </div>
+
   </div>
 
 <!-- Online Users Modal -->
@@ -93,14 +89,7 @@
   </div>
 </div>
 
-<!-- Leaderboard Modal -->
-<div id="leaderboard-modal">
-  <div class="modal-content">
-    <button id="close-leaderboard-btn">✕</button>
-    <div class="modal-header-title">🏆 leaderboard</div>
-    <div id="leaderboard-list" style="color: #999999; font-size: 0.875rem;">loading leaderboard...</div>
-  </div>
-</div>
+
 
   <h2 class="text-center">recently played</h2>
   <div id="recently-played-container" class="flex-container" style="margin-bottom: 50px;">
@@ -557,9 +546,7 @@
 <script src="JS/username-prompt.js"></script>
 <script src="JS/recently-played.js"></script>
 <script src="JS/favorites.js"></script>
-<script src="JS/leaderboard.js"></script>
 <script src="JS/profile-menu.js"></script>
-<script src="JS/leaderboard-display.js"></script>
 <script src="JS/settings-display.js"></script>
 <script src="JS/iframe-dark-mode.js"></script>
 <script>
