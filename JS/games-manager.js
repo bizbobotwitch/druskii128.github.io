@@ -13,10 +13,13 @@ class GamesManager {
     gamesRef.on('value', (snapshot) => {
       const data = snapshot.val();
       this.games = data ? Object.values(data) : [];
+      console.log('All games loaded:', this.games.length);
+      console.log('Games with trending=true:', this.games.filter(g => g.trending).map(g => g.name));
       // Compute trending dynamically from all games
       this.trending = this.games
-        .filter(game => game.trending)
+        .filter(game => game.trending === true)
         .sort((a, b) => (b.plays || 0) - (a.plays || 0));
+      console.log('Trending games after filter:', this.trending.length, this.trending.map(g => g.name));
       this.notifyListeners();
     });
   }

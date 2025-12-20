@@ -93,22 +93,39 @@
     const closeBtn = document.getElementById('close-modal-btn');
     const usersList = document.getElementById('users-list');
 
+    console.log('Modal elements found:', {
+      infoBtn: !!infoBtn,
+      modal: !!modal,
+      closeBtn: !!closeBtn,
+      usersList: !!usersList
+    });
+
     // Ensure modal is hidden on page load
     if (modal) {
       modal.style.display = 'none';
     }
 
     if (infoBtn && modal) {
+      console.log('Attaching click handler to online-info-btn');
       infoBtn.addEventListener('click', () => {
-        modal.style.display = 'flex';
+        console.log('Opening online users modal');
+        modal.style.display = '';
+        modal.classList.add('show');
+        usersList.innerHTML = '<div style="color: #999999; font-size: 0.875rem;">loading users...</div>';
+        
         // Fetch and display other users (exclude current session)
         Promise.all([
           db.ref('presence/sessions').once('value'),
           db.ref('games').once('value')
         ]).then(([sessionsSnapshot, gamesSnapshot]) => {
+          console.log('Data loaded successfully');
           const sessions = sessionsSnapshot.val() || {};
           const games = gamesSnapshot.val() || {};
           const now = Date.now();
+          
+          console.log('Sessions:', Object.keys(sessions).length);
+          console.log('Games:', Object.keys(games).length);
+          console.log('Current sessionId:', sessionId);
           
           // Create a map of gameId to game data for quick lookup
           const gamesMap = {};
@@ -138,6 +155,8 @@
                 && (now - (user.ts || 0)) < 30000;
             })
             .map(([key, user]) => user);
+          
+          console.log('Other sessions after filter:', otherSessions.length);
           
           usersList.innerHTML = '';
 
@@ -280,16 +299,23 @@
           });
         }).catch(err => {
           console.error('Error loading users:', err);
+          console.error('Error stack:', err.stack);
+          console.error('Error message:', err.message);
           usersList.innerHTML = '<div style="color: #999999; font-size: 0.875rem;">unable to load online users. please try again later.</div>';
         });
       });
-
+      
+      // Set up close handlers outside of the click event
       closeBtn?.addEventListener('click', () => {
+        modal.classList.remove('show');
         modal.style.display = 'none';
       });
 
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
+        if (e.target === modal) {
+          modal.classList.remove('show');
+          modal.style.display = 'none';
+        }
       });
     }
   } catch (e) {

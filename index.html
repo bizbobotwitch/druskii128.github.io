@@ -81,7 +81,7 @@
   </div>
 
 <!-- Online Users Modal -->
-<div id="online-users-modal">
+<div id="online-users-modal" style="display: none;">
   <div class="modal-content">
     <button id="close-modal-btn">✕</button>
     <div class="modal-header-title">users online</div>
@@ -703,13 +703,23 @@ if (typeof gamesManager !== 'undefined') {
   
   gamesManager.addListener((allGames, trendingGames) => {
     console.log('Games updated - Trending:', trendingGames.length, 'All:', allGames.length);
-        // Filter by section
-        const allSectionGames = allGames.filter(g => (g.section || 'all') === 'all');
-        const papasSectionGames = allGames.filter(g => (g.section || 'all') === 'papas');
+    
+    // If no trending games, show top 5 by plays as fallback
+    let displayTrending = trendingGames;
+    if (displayTrending.length === 0 && allGames.length > 0) {
+      console.log('No trending games marked, using top 5 by plays');
+      displayTrending = allGames
+        .sort((a, b) => (b.plays || 0) - (a.plays || 0))
+        .slice(0, 5);
+    }
+    
+    // Filter by section
+    const allSectionGames = allGames.filter(g => (g.section || 'all') === 'all');
+    const papasSectionGames = allGames.filter(g => (g.section || 'all') === 'papas');
 
-        renderTrendingGames(trendingGames);
-        renderAllGames(allSectionGames);
-        renderPapasGames(papasSectionGames);
+    renderTrendingGames(displayTrending);
+    renderAllGames(allSectionGames);
+    renderPapasGames(papasSectionGames);
   });
 }
 
@@ -717,7 +727,18 @@ if (typeof gamesManager !== 'undefined') {
 
 function renderTrendingGames(games) {
   const container = document.getElementById('trending-games');
+  if (!container) {
+    console.error('trending-games container not found');
+    return;
+  }
+  
   container.innerHTML = '';
+  
+  if (!games || games.length === 0) {
+    console.warn('No trending games to display');
+    container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">no trending games yet</p>';
+    return;
+  }
   
   // Already sorted by plays in games-manager
   games.forEach(game => {

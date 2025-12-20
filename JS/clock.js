@@ -1,4 +1,7 @@
 function startTime() {
+  const clockElement = document.getElementById('txt');
+  if (!clockElement) return; // Exit if element doesn't exist
+  
   const today = new Date();
   
   // Convert to GMT-6
@@ -18,7 +21,7 @@ function startTime() {
   m = checkTime(m);
   s = checkTime(s);
   
-  document.getElementById('txt').innerHTML = h + ":" + m + ":" + s + " " + ampm + " gmt-6";
+  clockElement.innerHTML = h + ":" + m + ":" + s + " " + ampm + " gmt-6";
   setTimeout(startTime, 1000);
 }
 

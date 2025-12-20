@@ -3,23 +3,26 @@
  
     if (url) {
         var win;
+        var hideBtn = document.getElementById('hide');
  
-        document.getElementById('hide').onclick = function() {
-            if (win) {
-                win.focus();
-            } 
-            else {
-                win = window.open();
-                win.document.body.style.margin = '0';
-                win.document.body.style.height = '100vh';
-                var iframe = win.document.createElement('iframe');
-                iframe.style.border = 'none';
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                iframe.style.margin = '0';
-                iframe.src = url;
-                win.document.body.appendChild(iframe);
-                location.replace("https://desmos.com/calculator/");
-            }
-        };
+        if (hideBtn) {
+            hideBtn.onclick = function() {
+                if (win) {
+                    win.focus();
+                } 
+                else {
+                    win = window.open();
+                    win.document.body.style.margin = '0';
+                    win.document.body.style.height = '100vh';
+                    var iframe = win.document.createElement('iframe');
+                    iframe.style.border = 'none';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.margin = '0';
+                    iframe.src = url;
+                    win.document.body.appendChild(iframe);
+                    location.replace("https://desmos.com/calculator/");
+                }
+            };
+        }
     }
